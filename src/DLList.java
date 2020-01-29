@@ -26,66 +26,72 @@ public class DLList<T> implements List<T> {
         dummy.next = dummy;
         n = 0;
     }
+
+    public void print(){
+        Node<T> cur = dummy.next;
+        for(int i = 0; i < n; i++){
+            System.out.println(cur.x);
+        }
+    }
     @Override
     public boolean add(int i, T x) {
         if(i > n || i < 0)
             throw new IndexOutOfBoundsException();
-        if(i < n/2) {
-            int j = 0;
-            Node<T> addNode = new Node<>();
-            addNode.x = x;
-            for (Node<T> cur = dummy.next; cur.next != dummy; cur = cur.next) {
-                if (j == i) {
-                    cur.prev.next = addNode;
-                    cur.next.prev = addNode;
-                    addNode.prev = cur.prev;
-                    addNode.next = cur.next;
-                    break;
-                }
-                j++;
-            }
-            n++;
+        Node<T> addNode = new Node<>();
+        addNode.x = x;
+        if(i == 1 && n == 1){
+            dummy.prev = addNode;
+            addNode.next = dummy;
+            addNode.prev = dummy.next;
+            dummy.next.next = addNode;
         }
         if(i >= n/2){
-            int j = 0;
-            Node<T> addNode = new Node<>();
-            addNode.x = x;
-            for (Node<T> cur = dummy.prev; cur.prev != dummy; cur = cur.prev) {
-                if (j == i) {
-                    cur.prev.next = addNode;
-                    cur.next.prev = addNode;
-                    addNode.prev = cur.prev;
-                    addNode.next = cur.next;
-                    break;
-                }
-                j++;
+            Node<T> p = dummy.prev;
+            for(int j = n; j > i; j--){
+                p = p.prev;
             }
+            addNode.next = p;
+            addNode.prev = p.prev;
+            p.prev.next = addNode;
+            p.prev = addNode;
+
+
             n++;
+            return true;
         }
-        return true;
+        else if(i < n/2){
+            Node<T> p = dummy.next;
+            for(int j = 0; j < i; j++){
+                p = p.next;
+            }
+            addNode.next = p;
+            addNode.prev = p.prev;
+            p.prev.next = addNode;
+            p.prev = addNode;
+            n++;
+            return true;
+        }
+        return false;
     }
 
     @Override
     public void set(int i, T x) {
         if(i > n || i < 0)
             throw new IndexOutOfBoundsException();
+        Node<T> p;
         if(i < n/2) {
-            int j = 0;
-            for (Node<T> cur = dummy.next; cur.next != null; cur = cur.next) {
-                if (j == i) {
-                    cur.x = x;
-                }
-                j++;
+            p = dummy.next;
+            for (int j = 0; j < i; j++) {
+                p = p.next;
             }
+            p.x = x;
         }
         else if(i >= n/2){
-            int j = 0;
-            for (Node<T> cur = dummy.prev; cur.prev != null; cur = cur.prev) {
-                if (j == i) {
-                    cur.x = x;
-                }
-                j++;
+            p = dummy.prev;
+            for (int j = n; j > i; j--) {
+                p = p.prev;
             }
+            p.x = x;
         }
     }
 
@@ -116,21 +122,12 @@ public class DLList<T> implements List<T> {
 
     @Override
     public boolean addFront(T x) {
-        add(0, x);
-        return true;
+        return add(0, x);
     }
 
     @Override
     public boolean addBack(T x) {
-//        Node<T> addNode = new Node<>();
-//        addNode.x = x;
-//        addNode.prev = dummy.prev;
-//        dummy.prev = addNode;
-//        addNode.next = dummy;
-//        addNode.prev.next = addNode;
-//        n++;
-        add(n, x);
-        return true;
+        return add(n, x);
 
     }
 
@@ -146,9 +143,12 @@ public class DLList<T> implements List<T> {
 
     @Override
     public T find(T x) {
-        for(Node<T> cur = dummy; cur.next != dummy; cur = cur.next){
-            if(cur.x == x)
-                return cur.x;
+        Node<T> p = dummy.next;
+        for(int i = 0; i < n; i++){
+            System.out.println(p.x);
+            if(p.x == x)
+                return p.x;
+            p = p.next;
         }
         return null;
     }
