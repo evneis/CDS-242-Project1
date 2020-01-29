@@ -28,75 +28,120 @@ public class DLList<T> implements List<T> {
     }
     @Override
     public boolean add(int i, T x) {
-        int j = 0;
-        Node<T> addNode = new Node<>();
-        addNode.x = x;
-        for(Node<T> cur = dummy.next; dummy.next != dummy; cur = cur.next){
-            if(j == i){
-                cur.prev.next = addNode;
-                cur.next.prev = addNode;
-                addNode.prev = cur.prev;
-                addNode.next = cur.next;
+        if(i > n || i < 0)
+            throw new IndexOutOfBoundsException();
+        if(i < n/2) {
+            int j = 0;
+            Node<T> addNode = new Node<>();
+            addNode.x = x;
+            for (Node<T> cur = dummy.next; cur.next != dummy; cur = cur.next) {
+                if (j == i) {
+                    cur.prev.next = addNode;
+                    cur.next.prev = addNode;
+                    addNode.prev = cur.prev;
+                    addNode.next = cur.next;
+                    break;
+                }
+                j++;
             }
-            j++;
+            n++;
         }
-        n++;
+        if(i >= n/2){
+            int j = 0;
+            Node<T> addNode = new Node<>();
+            addNode.x = x;
+            for (Node<T> cur = dummy.prev; cur.prev != dummy; cur = cur.prev) {
+                if (j == i) {
+                    cur.prev.next = addNode;
+                    cur.next.prev = addNode;
+                    addNode.prev = cur.prev;
+                    addNode.next = cur.next;
+                    break;
+                }
+                j++;
+            }
+            n++;
+        }
         return true;
     }
 
     @Override
     public void set(int i, T x) {
-        int j = 0;
-        for(Node<T> cur = dummy.next; cur.next != null; cur = cur.next){
-            if(j == i){
-                cur.x = x;
+        if(i > n || i < 0)
+            throw new IndexOutOfBoundsException();
+        if(i < n/2) {
+            int j = 0;
+            for (Node<T> cur = dummy.next; cur.next != null; cur = cur.next) {
+                if (j == i) {
+                    cur.x = x;
+                }
+                j++;
             }
-            j++;
+        }
+        else if(i >= n/2){
+            int j = 0;
+            for (Node<T> cur = dummy.prev; cur.prev != null; cur = cur.prev) {
+                if (j == i) {
+                    cur.x = x;
+                }
+                j++;
+            }
         }
     }
 
     @Override
     public T remove(int i) {
+        if(i >= n/2){
+            Node<T> p = dummy.prev;
+            for(int j = 0; j < i; j++){
+                p = p.prev;
+            }
+            p.prev.next = p.next;
+            p.next.prev = p.prev;
+            n--;
+            return p.x;
+        }
+        else if(i < n/2){
+            Node<T> p = dummy.next;
+            for(int j = 0; j < i; j++){
+                p = p.next;
+            }
+            p.prev.next = p.next;
+            p.next.prev = p.prev;
+            n--;
+            return p.x;
+        }
         return null;
     }
 
     @Override
     public boolean addFront(T x) {
-        Node<T> addNode = new Node<>();
-        addNode.x = x;
-        addNode.next = dummy.next;
-        dummy.next = addNode;
-        addNode.prev = dummy;
-        n++;
+        add(0, x);
         return true;
     }
 
     @Override
     public boolean addBack(T x) {
-        Node<T> addNode = new Node<>();
-        addNode.x = x;
-        addNode.prev = dummy.prev;
-        dummy.prev = addNode;
-        addNode.next = dummy;
-        n++;
+//        Node<T> addNode = new Node<>();
+//        addNode.x = x;
+//        addNode.prev = dummy.prev;
+//        dummy.prev = addNode;
+//        addNode.next = dummy;
+//        addNode.prev.next = addNode;
+//        n++;
+        add(n, x);
         return true;
 
     }
 
     @Override
     public T removeFront() {
-        T oldx = dummy.next.x;
-        dummy.next = dummy.next.next;
-        n--;
-        return oldx;
+       return remove(0);
     }
 
     @Override
     public T removeBack() {
-        T oldx = dummy.prev.x;
-        dummy.prev = dummy.prev.prev;
-        n--;
-        return oldx;
+        return remove(n);
     }
 
     @Override
@@ -119,7 +164,8 @@ public class DLList<T> implements List<T> {
 
     @Override
     public void clear() {
-        
+        dummy.next = dummy;
+        dummy.prev = dummy;
     }
 
     @Override
